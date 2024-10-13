@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace ProjectManagementSystem
 {
+    /// <summary>
+    /// Работа с файлами (базой данных)
+    /// </summary>
     public static class WorkWithFile
     {
         /// <summary>
@@ -44,6 +47,7 @@ namespace ProjectManagementSystem
                 new Role { ID = 1, Name = "Управляющий"},
                 new Role { ID = 2, Name = "Сотрудник"}
             };
+
             List<Status> statusesCollection = new List<Status>()
             {
                 new Status {ID = 1, Name ="To do"},
@@ -97,20 +101,22 @@ namespace ProjectManagementSystem
         /// <summary>
         /// Поиск пользователей
         /// </summary>
-        /// <param name="pathCollection"></param>
+        /// <param name="pathCollection">Наименования файлов Json</param>
         /// <returns>Список пользователей</returns>
         public static List<IdentificationData> SearchUser(List<string> pathCollection)
         {
             List<IdentificationData> userCurrentUser = new List<IdentificationData>();
 
-            using (var file = File.OpenText(pathCollection[1]))
+            using (var file = File.OpenText(pathCollection[0]))
             {
                 string sJson;
+
                 while ((sJson = file.ReadLine()) != null)
                 {
                     userCurrentUser.Add(JsonSerializer.Deserialize<IdentificationData>(sJson));
                 }
             }
+
             return userCurrentUser;
         }
 
@@ -127,15 +133,18 @@ namespace ProjectManagementSystem
             using (var file = File.OpenText(pathCollection[1]))
             {
                 string sJson;
+
                 while ((sJson = file.ReadLine()) != null)
                 {
                     Tasks itemTask = JsonSerializer.Deserialize<Tasks>(sJson);
+
                     if (itemTask.IDUser == currentUser.ID)
                     {
                         taskCurrentUser.Add(itemTask);
                     }
                 }
             }
+
             return taskCurrentUser;
         }
 
@@ -147,14 +156,17 @@ namespace ProjectManagementSystem
         public static List<Status> SearchStatus(List<string> pathCollection)
         {
             List<Status> statusCollection = new List<Status>();
+
             using (var file = File.OpenText(pathCollection[2]))
             {
                 string sJson;
+
                 while ((sJson = file.ReadLine()) != null)
                 {
                     statusCollection.Add(JsonSerializer.Deserialize<Status>(sJson));
                 }
             }
+
             return statusCollection;
         }
 
@@ -162,18 +174,21 @@ namespace ProjectManagementSystem
         /// Поиск Ролей
         /// </summary>
         /// <param name="pathCollection">Наименования файлов Json</param>
-        /// <returns></returns>
+        /// <returns>Список ролей</returns>
         public static List<Role> SearchRole(List<string> pathCollection)
         {
             List<Role> roleCollection = new List<Role>();
+
             using (var file = File.OpenText(pathCollection[3]))
             {
                 string sJson;
+
                 while ((sJson = file.ReadLine()) != null)
                 {
                     roleCollection.Add(JsonSerializer.Deserialize<Role>(sJson));
                 }
             }
+
             return roleCollection;
         }
 
@@ -185,11 +200,13 @@ namespace ProjectManagementSystem
         public static List<StatusTasks> SearchStatusTask(List<string> pathCollection)
         {
             List<StatusTasks> statusTaskCollection = new List<StatusTasks>();
+
             try
             {
                 using (var file = File.OpenText(pathCollection[4]))
                 {
                     string sJson;
+
                     while ((sJson = file.ReadLine()) != null)
                     {
                         StatusTasks statusTask = JsonSerializer.Deserialize<StatusTasks>(sJson);
@@ -202,6 +219,7 @@ namespace ProjectManagementSystem
             {
                 Console.WriteLine("Файл пуст или не найден");
             }
+
             return statusTaskCollection;
         }
 
@@ -227,9 +245,11 @@ namespace ProjectManagementSystem
         public static void EditStatus(List<string> pathCollection, Tasks editTask, int idStatus)
         {
             List<Tasks> taskCollection = new List<Tasks>();
+
             using (var file = File.OpenText(pathCollection[1]))
             {
                 string sJson;
+
                 while ((sJson = file.ReadLine()) != null)
                 {
                     Tasks t = JsonSerializer.Deserialize<Tasks>(sJson);

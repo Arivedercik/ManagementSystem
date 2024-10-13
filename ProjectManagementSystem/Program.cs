@@ -9,8 +9,7 @@ using static ProjectManagementSystem.UserOperations;
 
 
 namespace ProjectManagementSystem
-{
-
+{    
     internal class Program
     {
         //Имена файлов
@@ -36,33 +35,43 @@ namespace ProjectManagementSystem
             {
                 Console.WriteLine("1. Авторизация\n2. Регистрация");
                 string answer = Console.ReadLine();
+
                 switch(answer)
                 {
                     case "1":
                         currentUser = Entrance.Authorization(pathCollection[0]);
+
                         if (currentUser != null)
                         {
                             Console.Clear();
                             UserOperations actionUser = new UserOperations();
+
                             switch (currentUser.Role)
                             {
                                 case 1:
                                     actionUser.Admin(pathCollection);
+
                                     break;
                                 case 2:
                                     actionUser.Emp(currentUser, pathCollection);
+
                                     break;
                                 default:
                                     break;
                             }
                         }
+
                         break;
+
                     case "2":
                         Entrance.Registration(pathCollection);
-                        Console.WriteLine("Пользователь зарегестрирован\n");
+                        Console.WriteLine("Пользователь зарегистрирован\n");
+
                         break;
+
                     default:
                         Console.WriteLine("Неверный ввод");
+
                         break;
                 }
             }          

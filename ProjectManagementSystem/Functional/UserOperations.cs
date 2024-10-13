@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace ProjectManagementSystem
 {
+    /// <summary>
+    /// Функционал пользователей по ролям
+    /// </summary>
     public class UserOperations
     {
         private string answerUser;
@@ -23,14 +26,16 @@ namespace ProjectManagementSystem
         {
             while (true)
             {
-                Console.WriteLine("Выберете дейсвия:\n1. Регистрация пользователя\n2. Создание задачи\n3. Логи изменения задач\n4. Выход");
+                Console.WriteLine("Выберете действия:\n1. Регистрация пользователя\n2. Создание задачи\n3. Логи изменения задач\n4. Выход");
                 answerUser = Console.ReadLine();
+
                 if (rNumber.IsMatch(answerUser))
                 {
                     switch (answerUser)
                     {
                         case "1":
                             IdentificationData newUser = CreateNewItem.EnterDataUser(pathCollection);
+
                             if (newUser != null)
                             {
                                 WorkWithFile.AddNewUser(pathCollection[0], newUser);
@@ -40,9 +45,12 @@ namespace ProjectManagementSystem
                             {
                                 Console.WriteLine("Пользователь не загрузился..");
                             }
+
                             break;
+
                         case "2":
                             Tasks newTask = CreateNewItem.EnterDataTask(pathCollection);
+
                             if (newTask != null)
                             {
                                 WorkWithFile.AddNewTask(pathCollection[1], newTask);
@@ -52,11 +60,16 @@ namespace ProjectManagementSystem
                             {
                                 Console.WriteLine("Задача не загрузилась..");
                             }
+
                             break;
+
                         case "3":
                             WorkWithFile.SearchStatusTask(pathCollection);
+
                             break;
+
                         case "4":
+
                             return;
                     }
                 }
@@ -72,24 +85,36 @@ namespace ProjectManagementSystem
         {
             while (true)
             {
-                Console.WriteLine("\nВыберете дейсвия:\n1. Просмотр задач\n2. Изменение статуса задач\n3. Выход\n");
+                Console.WriteLine("\nВыберите действия:\n1. Просмотр задач\n2. Изменение статуса задач\n3. Выход\n");
                 answerUser = Console.ReadLine();
+
                 if (rNumber.IsMatch(answerUser))
                 {
                     switch (answerUser)
                     {
                         case "1":
                             ViewTask(currentUser, pathCollection);
+
                             break;
                         case "2":
+
                             EditTask(currentUser, pathCollection);
+
                             break;
+
                         case "3":
+
                             return;
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Задачи сотрудника
+        /// </summary>
+        /// <param name="currentUser">Сотрудник</param>
+        /// <param name="pathCollection">Наименования файлов Json</param>
         public void ViewTask(IdentificationData currentUser, List<string> pathCollection)
         {
             Console.Clear();
@@ -103,14 +128,17 @@ namespace ProjectManagementSystem
             else
             {
                 Console.WriteLine("Задачи:");
+
                 foreach (var itemTask in taskCurrentUser)
                 {
                     using (var fileStatus = File.OpenText(pathCollection[2]))
                     {
                         string sJsonStatus;
+
                         while ((sJsonStatus = fileStatus.ReadLine()) != null)
                         {
                             Status itemStatus = JsonSerializer.Deserialize<Status>(sJsonStatus);
+
                             if (itemStatus.ID == itemTask.IDStatus)
                             {
                                 thisStatus = itemStatus.Name;
@@ -122,28 +150,40 @@ namespace ProjectManagementSystem
                 Console.WriteLine();
             }
         }
+
+        /// <summary>
+        /// Редактирование статуса задачи сотрудником
+        /// </summary>
+        /// <param name="currentUser">Сотрудник</param>
+        /// <param name="pathCollection">Наименования файлов Json</param>
         public void EditTask(IdentificationData currentUser, List<string> pathCollection)
         {
             Console.Clear();
             ViewTask(currentUser, pathCollection);
+
             while (true)
             {
-                Console.WriteLine("Выберете задачу по ID: ");
+                Console.WriteLine("Выберите задачу по ID: ");
                 string idTask = Console.ReadLine();
+
                 if (rNumber.IsMatch(idTask))
                 {
                     try
                     {
                         Tasks selectTask = WorkWithFile.SearchTaskUser(currentUser, pathCollection).Where(x => x.ID == Convert.ToInt32(idTask)).FirstOrDefault();
+                        
                         while (true)
                         {
-                            Console.WriteLine("Выберете новый статус по ID: ");
+                            Console.WriteLine("Выберите новый статус по ID: ");
                             List<Status> statusCollection = WorkWithFile.SearchStatus(pathCollection);
+
                             foreach (var item in statusCollection)
                             {
                                 Console.WriteLine(item.ID + " " + item.Name);
                             }
+
                             string idStatus = Console.ReadLine();
+
                             if (rNumber.IsMatch(idStatus))
                             {                               
                                 StatusTasks newST = new StatusTasks()
@@ -153,8 +193,10 @@ namespace ProjectManagementSystem
                                     IDTask = selectTask.ID,
                                     Status = (statusCollection.FirstOrDefault(x=>x.ID == Convert.ToInt32(idStatus))).Name  
                                 };
+
                                 WorkWithFile.EditStatus(pathCollection, selectTask, Convert.ToInt32(idStatus));
                                 WorkWithFile.AddStatusTask(pathCollection, newST);
+
                                 break;
                             }
                         }
@@ -163,6 +205,7 @@ namespace ProjectManagementSystem
                     {
                         Console.WriteLine("Задача не найдена");
                     }
+
                     break;
                 }
             }
