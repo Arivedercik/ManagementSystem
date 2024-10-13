@@ -35,54 +35,58 @@ namespace ProjectManagementSystem
             {
                 while (true)
                 {
-                    currentUser = new IdentificationData();
+                    Console.WriteLine("Авторизация");
                     while (true)
                     {
-                        Console.WriteLine("Введите логин:");
-                        currentUser.Login = Console.ReadLine();
-                        if (String.IsNullOrWhiteSpace(currentUser.Login))
+                        currentUser = new IdentificationData();
+                        while (true)
                         {
-                            Console.WriteLine("Логин не может быть пустым.");
+                            Console.WriteLine("Введите логин:");
+                            currentUser.Login = Console.ReadLine();
+                            if (String.IsNullOrWhiteSpace(currentUser.Login))
+                            {
+                                Console.WriteLine("Логин не может быть пустым.");
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                        else
+                        while (true)
                         {
-                            break;
+                            Console.WriteLine("Введите пароль:");
+                            currentUser.Password = Console.ReadLine();
+                            if (String.IsNullOrWhiteSpace(currentUser.Password))
+                            {
+                                Console.WriteLine("Пароль не может быть пустым.");
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
-                    }
-                    while (true)
-                    {
-                        Console.WriteLine("Введите пароль:");
-                        currentUser.Password = Console.ReadLine();
-                        if (String.IsNullOrWhiteSpace(currentUser.Password))
-                        {
-                            Console.WriteLine("Пароль не может быть пустым.");
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
 
-                    if ((currentUser = Authorization.Entrance(currentUser.Login, currentUser.Password, PathJsonFileUsers)) != null)
-                    {
-                        break;
+                        if ((currentUser = Authorization.Entrance(currentUser.Login, currentUser.Password, PathJsonFileUsers)) != null)
+                        {
+                            break;
+                        }
                     }
+                    UserOperations actionUser = new UserOperations();
+                    switch (currentUser.Role)
+                    {
+                        case 1:
+                            actionUser.Admin(pathCollection);
+                            break;
+                        case 2:
+                            actionUser.Emp(currentUser, pathCollection);
+                            break;
+                        default:
+                            break;
+                    }
+                    Console.Clear();
                 }
             }
-
-            UserOperations actionUser = new UserOperations();
-            switch (currentUser.Role)
-            {
-                case 1:
-                    actionUser.Admin(pathCollection);
-                    break;
-                case 2:
-                    actionUser.Emp();
-                    break;
-                default:
-                    break;
-            }
-
+        
             Console.ReadKey();
         }
     }

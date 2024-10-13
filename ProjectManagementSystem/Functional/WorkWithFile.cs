@@ -72,7 +72,38 @@ namespace ProjectManagementSystem
             {
                 file.WriteLine(JsonSerializer.Serialize<Tasks>(newTask));
             }
+        }
+        public static List<Tasks> SearchTaskUser(IdentificationData currentUser, List<string> pathCollection)
+        {
+            List<Tasks> taskCurrentUser = new List<Tasks>();
 
+            using (var fileTask = File.OpenText(pathCollection[1]))
+            {
+                string sJson;
+                if ((sJson = fileTask.ReadLine()) != null)
+                {
+                    Tasks itemTask = JsonSerializer.Deserialize<Tasks>(sJson);
+                    if (itemTask.IDUser == currentUser.ID)
+                    {
+                        taskCurrentUser.Add(itemTask);
+                    }
+                }
+            }
+            return taskCurrentUser;
+        }
+
+        public static List<Status> SearchStatus(List<string> pathCollection)
+        {
+            List<Status> statusCollection = new List<Status>(0);
+            using (var fileTask = File.OpenText(pathCollection[2]))
+            {
+                string sJson;
+                if ((sJson = fileTask.ReadLine()) != null)
+                {
+                    statusCollection.Add(JsonSerializer.Deserialize<Status>(sJson));                    
+                }
+            }
+            return statusCollection;
         }
     }
 }

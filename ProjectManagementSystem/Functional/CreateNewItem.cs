@@ -12,17 +12,17 @@ namespace ProjectManagementSystem
 {
     public static class CreateNewItem
     {
-        public static IdentificationData EnterDataUser(List<string> pathsFile)
+        public static IdentificationData EnterDataUser(List<string> pathCollection)
         {
             IdentificationData newUser = new IdentificationData();
 
-            if (File.ReadAllLines(pathsFile[0]).Length == 0)
+            if (File.ReadAllLines(pathCollection[0]).Length == 0)
             {
                 newUser.ID = 1;
             }
             else
             {
-                newUser.ID = File.ReadAllLines(pathsFile[0]).Length +1;
+                newUser.ID = File.ReadAllLines(pathCollection[0]).Length +1;
             }
 
 
@@ -69,19 +69,21 @@ namespace ProjectManagementSystem
             return newUser;
         }
     
-        public static Tasks EnterDataTask(List<string> pathsFile)
+        public static Tasks EnterDataTask(List<string> pathCollection)
         {
             Tasks newTask = new Tasks();
             
-            if(File.ReadAllLines(pathsFile[1]).Length == 0)
+            if(File.ReadAllLines(pathCollection[1]).Length == 0)
             {
                 newTask.ID = 1;
             }
             else
             {
-                newTask.ID = File.ReadAllLines(pathsFile[1]).Length + 1;
+                newTask.ID = File.ReadAllLines(pathCollection[1]).Length + 1;
             }
+
             newTask.IDStatus = 1;
+
             while (true)
             {
                 Console.WriteLine("Введите наименование задачи:");
@@ -96,6 +98,7 @@ namespace ProjectManagementSystem
                     break;
                 }
             }
+
             while (true)
             {
                 Console.WriteLine("Введите описание задачи:");
@@ -112,12 +115,12 @@ namespace ProjectManagementSystem
             }
 
             List<IdentificationData> userCollection = new List<IdentificationData>();          
-            using (var file = File.OpenText(pathsFile[0]))
+            using (var file = File.OpenText(pathCollection[0]))
             {
                 string jsonItem;
+                Console.WriteLine("\nЗагрузка пользователей");
                 while ((jsonItem = file.ReadLine()) != null)
                 {
-                    Console.WriteLine("\nЗагрузка пользователей");
                     IdentificationData user = JsonSerializer.Deserialize<IdentificationData>(jsonItem);
                     if(user.Role == 2)
                     {
@@ -132,6 +135,7 @@ namespace ProjectManagementSystem
             if (userCollection.Count == 0)
             {
                 Console.WriteLine("Стоит добавить сотрудника, некому присвоить задачу");
+                return null;
             }
             else
             {
@@ -139,7 +143,7 @@ namespace ProjectManagementSystem
                 {
                     Console.WriteLine("Выберете по ID кому принадлежит задача:");
                     string idUser = Console.ReadLine();
-                    Regex rNumber = new Regex("[0-9]{0, }");
+                    Regex rNumber = new Regex("^[0-9]{0,}");
                     if (rNumber.IsMatch(idUser))
                     {
                         try
