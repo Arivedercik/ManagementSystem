@@ -37,11 +37,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Functional\Authorization.cs" />
+    <Compile Include="Functional\Entrance.cs" />
     <Compile Include="Functional\CreateNewItem.cs" />
     <Compile Include="Functional\WorkWithFile.cs" />
     <Compile Include="Model\Role.cs" />
     <Compile Include="Model\Status.cs" />
+    <Compile Include="Model\StatusTasks.cs" />
     <Compile Include="Model\Tasks.cs" />
     <Compile Include="Functional\UserOperations.cs" />
     <Compile Include="Model\IdentificationData.cs" />

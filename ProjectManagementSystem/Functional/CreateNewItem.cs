@@ -12,6 +12,24 @@ namespace ProjectManagementSystem
 {
     public static class CreateNewItem
     {
+        public static string RepeatField(string input)
+        {
+            string s;
+            while (true)
+            {
+                Console.WriteLine("Введите "+input);
+                s = Console.ReadLine();
+                if (String.IsNullOrWhiteSpace(s))
+                {
+                    Console.WriteLine(input+" не может быть пустым.");
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return s;
+        }
         public static IdentificationData EnterDataUser(List<string> pathCollection)
         {
             IdentificationData newUser = new IdentificationData();
@@ -25,50 +43,32 @@ namespace ProjectManagementSystem
                 newUser.ID = File.ReadAllLines(pathCollection[0]).Length +1;
             }
 
+            newUser.Login = RepeatField("логин");
+            newUser.Password = RepeatField("пароль");
+            newUser.UserFIO = RepeatField("фио");
+          
+            while (true)
+            {
+                Console.WriteLine("Выберете роль: ");
+                foreach(var item in WorkWithFile.SearchRole(pathCollection))
+                {
+                    Console.WriteLine(item.ID + ". " + item.Name);
+                }
+                string idRole = Console.ReadLine();
 
-            while (true)
-            {
-                Console.WriteLine("Введите логин:");
-                newUser.Login = Console.ReadLine();
-                if (String.IsNullOrWhiteSpace(newUser.Login))
+                if(new Regex("^[0-9]").IsMatch(idRole))
                 {
-                    Console.WriteLine("Логин не может быть пустым.");
+                    newUser.Role = Convert.ToInt32(idRole);
+                    break;
                 }
                 else
                 {
-                    break;
+                    Console.WriteLine("Роль не определена");
                 }
             }
-            while (true)
-            {
-                Console.WriteLine("Введите пароль:");
-                newUser.Password = Console.ReadLine();
-                if (String.IsNullOrWhiteSpace(newUser.Password))
-                {
-                    Console.WriteLine("Пароль не может быть пустым.");
-                }
-                else
-                {
-                    break;
-                }
-            }
-            while (true)
-            {
-                Console.WriteLine("Введите фио:");
-                newUser.UserFIO = Console.ReadLine();
-                if (String.IsNullOrWhiteSpace(newUser.UserFIO))
-                {
-                    Console.Clear();
-                    Console.WriteLine("фио не может быть пустым.");
-                }
-                else
-                {
-                    break;
-                }
-            }
+            
             return newUser;
         }
-    
         public static Tasks EnterDataTask(List<string> pathCollection)
         {
             Tasks newTask = new Tasks();
@@ -83,37 +83,9 @@ namespace ProjectManagementSystem
             }
 
             newTask.IDStatus = 1;
-
-            while (true)
-            {
-                Console.WriteLine("Введите наименование задачи:");
-                newTask.Name = Console.ReadLine();
-                if (String.IsNullOrWhiteSpace(newTask.Name))
-                {
-                    Console.Clear();
-                    Console.WriteLine("Наименование не может быть пустым.");
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            while (true)
-            {
-                Console.WriteLine("Введите описание задачи:");
-                newTask.Description = Console.ReadLine();
-                if (String.IsNullOrWhiteSpace(newTask.Description))
-                {
-                    Console.Clear();
-                    Console.WriteLine("Описание не может быть пустым.");
-                }
-                else
-                {
-                    break;
-                }
-            }
-
+            newTask.Name = RepeatField("Наименование задачи");
+            newTask.Description = RepeatField("Описание задачи");
+           
             List<IdentificationData> userCollection = new List<IdentificationData>();          
             using (var file = File.OpenText(pathCollection[0]))
             {

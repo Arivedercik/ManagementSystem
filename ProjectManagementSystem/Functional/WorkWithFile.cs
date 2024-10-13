@@ -12,6 +12,10 @@ namespace ProjectManagementSystem
 {
     public static class WorkWithFile
     {
+        /// <summary>
+        /// Инициализация файлов
+        /// </summary>
+        /// <param name="pathsFile">Наименования файлов Json</param>
         public static void CreateJsonFiles(List<string> pathsFile)
         {
             try
@@ -20,6 +24,7 @@ namespace ProjectManagementSystem
                 File.Create(pathsFile[1]).Close();
                 File.Create(pathsFile[2]).Close();
                 File.Create(pathsFile[3]).Close();
+                File.Create(pathsFile[4]).Close();
             }
             catch
             {
@@ -27,6 +32,10 @@ namespace ProjectManagementSystem
             }
         }
 
+        /// <summary>
+        /// Заполнение файлов Роль и Статус (неизменяемые)
+        /// </summary>
+        /// <param name="pathsFile">Наименования файлов Json</param>
         public static void WriteInJsonFiles(List<string> pathsFile)
         {
             List<Role> roleCollection = new List<Role>() 
@@ -58,6 +67,11 @@ namespace ProjectManagementSystem
             }
         }
 
+        /// <summary>
+        /// Добавление нового пользователя
+        /// </summary>
+        /// <param name="pathUser">Наименования файлов Json</param>
+        /// <param name="newUser">Добавляемый пользователь</param>
         public static void AddNewUser(string pathUser, IdentificationData newUser)
         {
             using (var file = File.AppendText(pathUser)) 
@@ -66,6 +80,11 @@ namespace ProjectManagementSystem
             }
         }
 
+        /// <summary>
+        /// Добавление новой задачи
+        /// </summary>
+        /// <param name="pathTask">Наименования файлов Json</param>
+        /// <param name="newTask">Добавляемая задача</param>
         public static void AddNewTask(string pathTask, Tasks newTask)
         {
             using (var file = File.AppendText(pathTask))
@@ -73,14 +92,21 @@ namespace ProjectManagementSystem
                 file.WriteLine(JsonSerializer.Serialize<Tasks>(newTask));
             }
         }
+
+        /// <summary>
+        /// Поиск задач пользователя
+        /// </summary>
+        /// <param name="currentUser">Пользователь</param>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <returns></returns>
         public static List<Tasks> SearchTaskUser(IdentificationData currentUser, List<string> pathCollection)
         {
             List<Tasks> taskCurrentUser = new List<Tasks>();
 
-            using (var fileTask = File.OpenText(pathCollection[1]))
+            using (var file = File.OpenText(pathCollection[1]))
             {
                 string sJson;
-                if ((sJson = fileTask.ReadLine()) != null)
+                while ((sJson = file.ReadLine()) != null)
                 {
                     Tasks itemTask = JsonSerializer.Deserialize<Tasks>(sJson);
                     if (itemTask.IDUser == currentUser.ID)
@@ -92,18 +118,76 @@ namespace ProjectManagementSystem
             return taskCurrentUser;
         }
 
+        /// <summary>
+        /// Список Статусов
+        /// </summary>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <returns></returns>
         public static List<Status> SearchStatus(List<string> pathCollection)
         {
-            List<Status> statusCollection = new List<Status>(0);
-            using (var fileTask = File.OpenText(pathCollection[2]))
+            List<Status> statusCollection = new List<Status>();
+            using (var file = File.OpenText(pathCollection[2]))
             {
                 string sJson;
-                if ((sJson = fileTask.ReadLine()) != null)
+                while ((sJson = file.ReadLine()) != null)
                 {
                     statusCollection.Add(JsonSerializer.Deserialize<Status>(sJson));                    
                 }
             }
             return statusCollection;
+        }
+
+        /// <summary>
+        /// Поиск Ролей
+        /// </summary>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <returns></returns>
+        public static List<Role> SearchRole(List<string> pathCollection)
+        {
+            List<Role> roleCollection = new List<Role>();
+            using (var file = File.OpenText(pathCollection[3]))
+            {
+                string sJson;
+                while ((sJson = file.ReadLine()) != null)
+                {
+                    roleCollection.Add(JsonSerializer.Deserialize<Role>(sJson));
+                }
+            }
+            return roleCollection;
+        }
+
+        /// <summary>
+        /// Поиск логов изменения задач
+        /// </summary>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <returns></returns>
+        public static List<StatusTasks> SearchStatusTask(List<string> pathCollection)
+        {
+            List<StatusTasks> statusTaskCollection = new List<StatusTasks>();
+            using (var file = File.OpenText(pathCollection[4]))
+            {
+                string sJson;
+                while ((sJson = file.ReadLine()) != null)
+                {
+                    StatusTasks statusTask = JsonSerializer.Deserialize<StatusTasks>(sJson);
+                    statusTaskCollection.Add(statusTask);
+                    Console.WriteLine(statusTask.Date + " - " + statusTask.FIOUser + " изменил статус задачи " + statusTask.IDTask + " на " + statusTask.Status);
+                }
+            }
+            return statusTaskCollection;
+        }
+
+        /// <summary>
+        /// Изменение статуса задач
+        /// </summary>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <param name="newStatusTask">Новая запись</param>
+        public static void EditStatusTask(List<string> pathCollection, StatusTasks newStatusTask)
+        {
+            using (var file = File.AppendText(pathCollection[2]))
+            {
+                file.WriteLine(JsonSerializer.Serialize<StatusTasks>(newStatusTask));
+            }
         }
     }
 }
