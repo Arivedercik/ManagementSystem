@@ -42,8 +42,26 @@ namespace ProjectManagementSystem
             {
                 newUser.ID = File.ReadAllLines(pathCollection[0]).Length +1;
             }
+            while (true)
+            {
+                newUser.Login = RepeatField("логин");
+                int flag = 0;
+                foreach(var item in WorkWithFile.SearchUser(pathCollection))
+                {
+                    if(newUser.Login == item.Login)
+                    {
+                        Console.WriteLine("Такой логин уже сущесвует. Измените логин");
+                        flag = 1;
+                        break;
+                    }                    
+                }
 
-            newUser.Login = RepeatField("логин");
+                if (flag == 0)
+                {
+                    break;
+                }
+            }
+            
             newUser.Password = RepeatField("пароль");
             newUser.UserFIO = RepeatField("фио");
           

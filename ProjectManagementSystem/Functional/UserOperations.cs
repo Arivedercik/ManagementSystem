@@ -157,6 +157,7 @@ namespace ProjectManagementSystem
     
                                 };
                                 WorkWithFile.EditStatusTask(pathCollection, newST);
+                                break;
                             }
                         }
                     }

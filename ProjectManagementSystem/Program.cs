@@ -22,7 +22,7 @@ namespace ProjectManagementSystem
 
         static void Main(string[] args)
         {
-            List<string> pathCollection = new List<string>() { PathJsonFileUsers, PathJsonFileTasks, PathJsonFileStatus, PathJsonFileRole };
+            List<string> pathCollection = new List<string>() { PathJsonFileUsers, PathJsonFileTasks, PathJsonFileStatus, PathJsonFileRole, PathJsonFileStatistics };
             IdentificationData currentUser;
 
             //Проверка первого запуска

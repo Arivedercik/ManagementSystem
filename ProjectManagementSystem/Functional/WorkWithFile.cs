@@ -93,6 +93,21 @@ namespace ProjectManagementSystem
             }
         }
 
+        public static List<IdentificationData> SearchUser( List<string> pathCollection)
+        {
+            List<IdentificationData> userCurrentUser = new List<IdentificationData>();
+
+            using (var file = File.OpenText(pathCollection[1]))
+            {
+                string sJson;
+                while ((sJson = file.ReadLine()) != null)
+                {
+                    userCurrentUser.Add(JsonSerializer.Deserialize<IdentificationData>(sJson));
+                }
+            }
+            return userCurrentUser;
+        }
+
         /// <summary>
         /// Поиск задач пользователя
         /// </summary>
@@ -164,15 +179,22 @@ namespace ProjectManagementSystem
         public static List<StatusTasks> SearchStatusTask(List<string> pathCollection)
         {
             List<StatusTasks> statusTaskCollection = new List<StatusTasks>();
-            using (var file = File.OpenText(pathCollection[4]))
+            try
             {
-                string sJson;
-                while ((sJson = file.ReadLine()) != null)
+                using (var file = File.OpenText(pathCollection[4]))
                 {
-                    StatusTasks statusTask = JsonSerializer.Deserialize<StatusTasks>(sJson);
-                    statusTaskCollection.Add(statusTask);
-                    Console.WriteLine(statusTask.Date + " - " + statusTask.FIOUser + " изменил статус задачи " + statusTask.IDTask + " на " + statusTask.Status);
+                    string sJson;
+                    while ((sJson = file.ReadLine()) != null)
+                    {
+                        StatusTasks statusTask = JsonSerializer.Deserialize<StatusTasks>(sJson);
+                        statusTaskCollection.Add(statusTask);
+                        Console.WriteLine(statusTask.Date + " - " + statusTask.FIOUser + " изменил статус задачи " + statusTask.IDTask + " на " + statusTask.Status);
+                    }
                 }
+            }
+            catch
+            {
+                Console.WriteLine("Файл пуст или не найден");
             }
             return statusTaskCollection;
         }
