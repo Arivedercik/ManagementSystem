@@ -60,7 +60,6 @@ namespace ProjectManagementSystem
                             return;
                     }
                 }
-                Console.Clear();
             }
         }
 
@@ -73,7 +72,7 @@ namespace ProjectManagementSystem
         {
             while (true)
             {
-                Console.WriteLine("Выберете дейсвия:\n1. Просмотр задач\n2. Изменение статуса задач\n3. Выход\n");
+                Console.WriteLine("\nВыберете дейсвия:\n1. Просмотр задач\n2. Изменение статуса задач\n3. Выход\n");
                 answerUser = Console.ReadLine();
                 if (rNumber.IsMatch(answerUser))
                 {
@@ -95,7 +94,7 @@ namespace ProjectManagementSystem
         {
             Console.Clear();
             List<Tasks> taskCurrentUser = WorkWithFile.SearchTaskUser(currentUser, pathCollection);
-            string thisStatus = "to do";
+            string thisStatus = "";
 
             if (taskCurrentUser.Count == 0)
             {
@@ -109,7 +108,7 @@ namespace ProjectManagementSystem
                     using (var fileStatus = File.OpenText(pathCollection[2]))
                     {
                         string sJsonStatus;
-                        if ((sJsonStatus = fileStatus.ReadLine()) != null)
+                        while ((sJsonStatus = fileStatus.ReadLine()) != null)
                         {
                             Status itemStatus = JsonSerializer.Deserialize<Status>(sJsonStatus);
                             if (itemStatus.ID == itemTask.IDStatus)
@@ -146,17 +145,16 @@ namespace ProjectManagementSystem
                             }
                             string idStatus = Console.ReadLine();
                             if (rNumber.IsMatch(idStatus))
-                            {
-                                selectTask.IDStatus = Convert.ToInt32(idStatus);
+                            {                               
                                 StatusTasks newST = new StatusTasks()
                                 {
-                                    Date = DateTime.Today,
+                                    Date = DateTime.Now,
                                     FIOUser = currentUser.UserFIO,
                                     IDTask = selectTask.ID,
-                                    Status = statusCollection[selectTask.IDStatus - 1].Name
-    
+                                    Status = (statusCollection.FirstOrDefault(x=>x.ID == Convert.ToInt32(idStatus))).Name  
                                 };
-                                WorkWithFile.EditStatusTask(pathCollection, newST);
+                                WorkWithFile.EditStatus(pathCollection, selectTask, Convert.ToInt32(idStatus));
+                                WorkWithFile.AddStatusTask(pathCollection, newST);
                                 break;
                             }
                         }

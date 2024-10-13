@@ -28,14 +28,12 @@ namespace ProjectManagementSystem
             //Проверка первого запуска
             if (!File.Exists(PathJsonFileUsers))
             {
-                Console.WriteLine("Первый вход: Регистрация управляющего");
                 WorkWithFile.CreateJsonFiles(pathCollection);
                 WorkWithFile.WriteInJsonFiles(pathCollection);                
             }
 
             while (true)
             {
-                Console.Clear();
                 Console.WriteLine("1. Авторизация\n2. Регистрация");
                 string answer = Console.ReadLine();
                 switch(answer)
@@ -61,11 +59,12 @@ namespace ProjectManagementSystem
                         break;
                     case "2":
                         Entrance.Registration(pathCollection);
+                        Console.WriteLine("Пользователь зарегестрирован\n");
                         break;
                     default:
+                        Console.WriteLine("Неверный ввод");
                         break;
                 }
-                Console.Clear();
             }          
         }
      }

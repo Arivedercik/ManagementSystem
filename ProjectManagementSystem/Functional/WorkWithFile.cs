@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ProjectManagementSystem
@@ -20,7 +21,7 @@ namespace ProjectManagementSystem
         {
             try
             {
-                File.Create(pathsFile[0]).Close();             
+                File.Create(pathsFile[0]).Close();
                 File.Create(pathsFile[1]).Close();
                 File.Create(pathsFile[2]).Close();
                 File.Create(pathsFile[3]).Close();
@@ -38,10 +39,10 @@ namespace ProjectManagementSystem
         /// <param name="pathsFile">Наименования файлов Json</param>
         public static void WriteInJsonFiles(List<string> pathsFile)
         {
-            List<Role> roleCollection = new List<Role>() 
-            { 
-                new Role { ID = 1, Name = "Управляющий"}, 
-                new Role { ID = 2, Name = "Сотрудник"} 
+            List<Role> roleCollection = new List<Role>()
+            {
+                new Role { ID = 1, Name = "Управляющий"},
+                new Role { ID = 2, Name = "Сотрудник"}
             };
             List<Status> statusesCollection = new List<Status>()
             {
@@ -74,7 +75,7 @@ namespace ProjectManagementSystem
         /// <param name="newUser">Добавляемый пользователь</param>
         public static void AddNewUser(string pathUser, IdentificationData newUser)
         {
-            using (var file = File.AppendText(pathUser)) 
+            using (var file = File.AppendText(pathUser))
             {
                 file.WriteLine(JsonSerializer.Serialize<IdentificationData>(newUser));
             }
@@ -93,7 +94,12 @@ namespace ProjectManagementSystem
             }
         }
 
-        public static List<IdentificationData> SearchUser( List<string> pathCollection)
+        /// <summary>
+        /// Поиск пользователей
+        /// </summary>
+        /// <param name="pathCollection"></param>
+        /// <returns>Список пользователей</returns>
+        public static List<IdentificationData> SearchUser(List<string> pathCollection)
         {
             List<IdentificationData> userCurrentUser = new List<IdentificationData>();
 
@@ -113,7 +119,7 @@ namespace ProjectManagementSystem
         /// </summary>
         /// <param name="currentUser">Пользователь</param>
         /// <param name="pathCollection">Наименования файлов Json</param>
-        /// <returns></returns>
+        /// <returns>Списко задач</returns>
         public static List<Tasks> SearchTaskUser(IdentificationData currentUser, List<string> pathCollection)
         {
             List<Tasks> taskCurrentUser = new List<Tasks>();
@@ -134,10 +140,10 @@ namespace ProjectManagementSystem
         }
 
         /// <summary>
-        /// Список Статусов
+        /// Поиск Статусов
         /// </summary>
         /// <param name="pathCollection">Наименования файлов Json</param>
-        /// <returns></returns>
+        /// <returns>Список статусов</returns>
         public static List<Status> SearchStatus(List<string> pathCollection)
         {
             List<Status> statusCollection = new List<Status>();
@@ -146,7 +152,7 @@ namespace ProjectManagementSystem
                 string sJson;
                 while ((sJson = file.ReadLine()) != null)
                 {
-                    statusCollection.Add(JsonSerializer.Deserialize<Status>(sJson));                    
+                    statusCollection.Add(JsonSerializer.Deserialize<Status>(sJson));
                 }
             }
             return statusCollection;
@@ -175,7 +181,7 @@ namespace ProjectManagementSystem
         /// Поиск логов изменения задач
         /// </summary>
         /// <param name="pathCollection">Наименования файлов Json</param>
-        /// <returns></returns>
+        /// <returns>Список логов</returns>
         public static List<StatusTasks> SearchStatusTask(List<string> pathCollection)
         {
             List<StatusTasks> statusTaskCollection = new List<StatusTasks>();
@@ -200,15 +206,51 @@ namespace ProjectManagementSystem
         }
 
         /// <summary>
-        /// Изменение статуса задач
+        /// Изменение статуса задач (логи)
         /// </summary>
         /// <param name="pathCollection">Наименования файлов Json</param>
         /// <param name="newStatusTask">Новая запись</param>
-        public static void EditStatusTask(List<string> pathCollection, StatusTasks newStatusTask)
+        public static void AddStatusTask(List<string> pathCollection, StatusTasks newStatusTask)
         {
-            using (var file = File.AppendText(pathCollection[2]))
+            using (var file = File.AppendText(pathCollection[4]))
             {
                 file.WriteLine(JsonSerializer.Serialize<StatusTasks>(newStatusTask));
+            }
+        }
+
+        /// <summary>
+        /// Изменение статуса задачи пользователем
+        /// </summary>
+        /// <param name="pathCollection">Наименования файлов Json</param>
+        /// <param name="editTask">Изменяемая задача</param>
+        /// <param name="idStatus">Новый статус</param>
+        public static void EditStatus(List<string> pathCollection, Tasks editTask, int idStatus)
+        {
+            List<Tasks> taskCollection = new List<Tasks>();
+            using (var file = File.OpenText(pathCollection[1]))
+            {
+                string sJson;
+                while ((sJson = file.ReadLine()) != null)
+                {
+                    Tasks t = JsonSerializer.Deserialize<Tasks>(sJson);
+
+                    if (t.ID == editTask.ID)
+                    {
+                        t.IDStatus = idStatus;
+                    }
+
+                    taskCollection.Add(t);
+                }
+            }
+
+            File.Create(pathCollection[1]).Close();
+
+            using (var file = File.AppendText(pathCollection[1]))
+            {
+                foreach (var item in taskCollection)
+                {
+                    file.WriteLine(JsonSerializer.Serialize<Tasks>(item));
+                }
             }
         }
     }
